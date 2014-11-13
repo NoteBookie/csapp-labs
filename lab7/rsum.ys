@@ -1,0 +1,55 @@
+#5130379059 Jin Jianian
+	.pos 0
+init:	irmovl Stack, %esp
+	irmovl Stack, %ebp
+	call Main
+	halt
+
+	.align 4
+ele1:	
+	.long 0x00a
+	.long ele2
+ele2:
+	.long 0x0b0
+	.long ele3
+ele3: 
+	.long 0xc00
+	.long 0
+Main:
+	pushl %ebp
+	rrmovl %esp, %ebp
+	irmovl ele1, %eax
+	pushl %eax
+	call Sum
+	irmovl $4, %ecx
+	addl %ecx, %esp
+	rrmovl %ebp, %esp
+	popl %ebp
+	ret
+#5130379059 Jinjianian
+	# int rsum_list()
+Sum:
+	pushl %ebp
+	rrmovl %esp, %ebp
+	pushl %ebx
+	mrmovl 8(%ebp),%ecx
+	andl %ecx,%ecx
+	jne	L1
+	xorl %eax, %eax
+	jmp End
+L1:
+	mrmovl (%ecx), %ebx
+	mrmovl $0x4(%ecx),%eax
+	pushl %eax
+	call Sum
+	irmovl $4, %ecx
+	addl %ecx, %esp
+	addl %ebx, %eax
+End:
+	popl %ebx
+	popl %ebp
+	ret
+
+	.pos 0x100
+Stack:
+	

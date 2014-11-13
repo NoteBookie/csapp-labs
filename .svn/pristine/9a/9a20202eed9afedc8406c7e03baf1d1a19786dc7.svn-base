@@ -1,0 +1,263 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len ints to dst.
+# Return the number of positive ints (>0) contained in src.
+#
+# 5130379059 Jin Jianian 金嘉年
+# 主要思路：
+# 1.将处理的过程分为16个一循环与一个JumpTable.
+# 2.使用iaddl指令代替addl
+# 3.通过安排ys中jle的位置，实现hcl中的特判。
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+ncopy:	pushl %ebp		# Save old frame pointer
+	rrmovl %esp,%ebp	# Set up new frame pointer
+	mrmovl 8(%ebp),%ebx	# src
+	mrmovl 16(%ebp),%edx	# len
+	mrmovl 12(%ebp),%ecx	# dst
+
+##################################################################
+# You can modify this portion
+	# Loop header
+	xorl %eax, %eax	# count = 0;
+
+Loop:	iaddl $-16, %edx
+	jle JTHEADER
+
+Loop1:	mrmovl (%ebx), %esi
+	rmmovl %esi, (%ecx)
+	addl %esi, %esi
+	jle Loop2
+	iaddl $1, %eax
+
+Loop2:	mrmovl 4(%ebx), %edi
+	rmmovl %edi, 4(%ecx)
+	addl %edi, %edi
+	jle Loop3
+	iaddl $1, %eax
+
+Loop3:	mrmovl 8(%ebx), %esi
+	rmmovl %esi, 8(%ecx)
+	addl %esi, %esi
+	jle Loop4
+	iaddl $1, %eax
+
+Loop4:	mrmovl 12(%ebx), %edi
+	rmmovl %edi, 12(%ecx)
+	addl %edi, %edi
+	jle Loop5
+	iaddl $1, %eax
+
+Loop5:	mrmovl 16(%ebx), %esi
+	rmmovl %esi, 16(%ecx)
+	addl %esi, %esi
+	jle Loop6
+	iaddl $1, %eax
+
+Loop6:	mrmovl 20(%ebx), %edi
+	rmmovl %edi, 20(%ecx)
+	addl %edi, %edi
+	jle Loop7
+	iaddl $1, %eax
+
+Loop7:	mrmovl 24(%ebx), %esi
+	rmmovl %esi, 24(%ecx)
+	addl %esi, %esi
+	jle Loop8
+	iaddl $1, %eax
+
+Loop8:	mrmovl 28(%ebx), %edi
+	rmmovl %edi, 28(%ecx)
+	addl %edi, %edi
+	jle Loop9
+	iaddl $1, %eax
+
+Loop9:	mrmovl 32(%ebx), %esi
+	rmmovl %esi, 32(%ecx)
+	addl %esi, %esi
+	jle Loop10
+	iaddl $1, %eax
+
+Loop10:	mrmovl 36(%ebx), %edi
+	rmmovl %edi, 36(%ecx)
+	addl %edi, %edi
+	jle Loop11
+	iaddl $1, %eax
+
+Loop11:	mrmovl 40(%ebx), %esi
+	rmmovl %esi, 40(%ecx)
+	addl %esi, %esi
+	jle Loop12
+	iaddl $1, %eax
+
+Loop12:	mrmovl 44(%ebx), %edi
+	rmmovl %edi, 44(%ecx)
+	addl %edi, %edi
+	jle Loop13
+	iaddl $1, %eax
+
+Loop13:	mrmovl 48(%ebx), %esi
+	rmmovl %esi, 48(%ecx)
+	addl %esi, %esi
+	jle Loop14
+	iaddl $1, %eax	
+
+Loop14:	mrmovl 52(%ebx), %edi
+	rmmovl %edi, 52(%ecx)
+	addl %edi, %edi
+	jle Loop15
+	iaddl $1, %eax
+
+Loop15:	mrmovl 56(%ebx), %esi
+	rmmovl %esi, 56(%ecx)
+	addl %esi, %esi
+	jle Loop16
+	iaddl $1, %eax
+
+Loop16:	mrmovl 60(%ebx), %edi
+	rmmovl %edi, 60(%ecx)
+	addl %edi, %edi
+	jle LoopEnd
+	iaddl $1, %eax
+
+LoopEnd:
+	iaddl $64, %ebx
+	iaddl $64, %ecx
+	jmp Loop
+
+JTHEADER:
+	addl %edx,%edx
+	addl %edx,%edx
+	mrmovl JTEnd(%edx), %edx
+	pushl %edx
+	ret
+
+JT16:	mrmovl 60(%ebx), %esi
+	rmmovl %esi, 60(%ecx)	
+	addl %esi, %esi
+	jle JT15
+	iaddl $1, %eax
+
+JT15:	mrmovl 56(%ebx), %edi
+	rmmovl %edi, 56(%ecx)	
+	addl %edi, %edi
+	jle JT14
+	iaddl $1, %eax
+
+JT14:	mrmovl 52(%ebx), %esi
+	rmmovl %esi, 52(%ecx)
+	addl %esi, %esi
+	jle JT13
+	iaddl $1, %eax
+
+JT13:	mrmovl 48(%ebx), %edi
+	rmmovl %edi, 48(%ecx)
+	addl %edi, %edi
+	jle JT12
+	iaddl $1, %eax
+
+JT12:	mrmovl 44(%ebx), %esi
+	rmmovl %esi, 44(%ecx)
+	addl %esi, %esi
+	jle JT11
+	iaddl $1, %eax
+
+JT11:	mrmovl 40(%ebx), %edi
+	rmmovl %edi, 40(%ecx)
+	addl %edi, %edi
+	jle JT10
+	iaddl $1, %eax
+
+JT10:	mrmovl 36(%ebx), %esi
+	rmmovl %esi, 36(%ecx)
+	addl %esi, %esi
+	jle JT9
+	iaddl $1, %eax
+
+JT9:	mrmovl 32(%ebx), %edi
+	rmmovl %edi, 32(%ecx)
+	addl %edi, %edi
+	jle JT8
+	iaddl $1, %eax
+
+JT8:	mrmovl 28(%ebx), %esi
+	rmmovl %esi, 28(%ecx)
+	addl %esi, %esi
+	jle JT7
+	iaddl $1, %eax
+
+JT7:	mrmovl 24(%ebx), %edi
+	rmmovl %edi, 24(%ecx)
+	addl %edi, %edi
+	jle JT6
+	iaddl $1, %eax
+
+JT6:	mrmovl 20(%ebx), %esi
+	rmmovl %esi, 20(%ecx)
+	addl %esi, %esi
+	jle JT5
+	iaddl $1, %eax
+
+JT5:	mrmovl 16(%ebx), %edi
+	rmmovl %edi, 16(%ecx)
+	addl %edi, %edi
+	jle JT4
+	iaddl $1, %eax	
+
+JT4:	mrmovl 12(%ebx), %esi
+	rmmovl %esi, 12(%ecx)
+	addl %esi, %esi
+	jle JT3
+	iaddl $1, %eax	
+
+JT3:	mrmovl 8(%ebx), %edi
+	rmmovl %edi, 8(%ecx)
+	addl %edi, %edi
+	jle JT2
+	iaddl $1, %eax	
+
+JT2:	mrmovl 4(%ebx), %esi
+	rmmovl %esi, 4(%ecx)
+	addl %esi, %esi
+	jle JT1
+	iaddl $1, %eax	
+
+JT1:	mrmovl (%ebx), %edi
+	rmmovl %edi, (%ecx)
+	addl %edi, %edi
+	jle Done
+	iaddl $1, %eax
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	rrmovl %ebp, %esp
+	leave 
+	ret
+##################################################################
+JTStart:
+	.long	Done
+	.long	JT1
+	.long	JT2
+	.long	JT3
+	.long	JT4
+	.long	JT5
+	.long	JT6
+	.long	JT7
+	.long	JT8
+	.long	JT9
+	.long	JT10
+	.long	JT11
+	.long	JT12
+	.long	JT13
+	.long	JT14
+	.long	JT15
+JTEnd:	.long	JT16
+
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

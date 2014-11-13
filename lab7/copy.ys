@@ -1,0 +1,67 @@
+#5130379059 Jinjianian
+
+	.pos 0
+init:	irmovl Stack, %esp
+	irmovl Stack, %ebp
+	call Main
+	halt
+
+	.align 4
+# Source block
+src:
+	.long 0x00a
+	.long 0x0b0
+	.long 0xc00
+# Destination block
+dest:
+	.long 0x111
+	.long 0x222
+	.long 0x333
+Main:
+	pushl %ebp
+	rrmovl %esp, %ebp
+	irmovl $3, %eax
+	pushl %eax
+	irmovl dest, %eax
+	pushl %eax
+	irmovl src, %eax
+	pushl %eax
+	call Copy
+	irmovl $0x12, %ebx
+	addl %ebx, %esp
+	rrmovl %ebp, %esp
+	popl %ebp
+	ret
+	#int copy_block()
+Copy:
+	pushl %ebp
+	rrmovl %esp, %ebp
+	xorl %eax, %eax
+	mrmovl 16(%ebp), %ebx
+	mrmovl 12(%ebp), %edx
+	mrmovl 8(%ebp), %ecx
+Loop:
+	andl %ebx, %ebx
+	jle End
+	mrmovl (%ecx), %esi
+	irmovl $4, %edi
+	addl %edi, %ecx
+	rmmovl %esi, (%edx)
+	addl %edi, %edx
+	xorl %esi, %eax
+	irmovl $-1, %edi
+	addl %edi, %ebx
+	jmp Loop
+End:
+	rrmovl %ebp, %esp
+	popl %ebp
+	ret
+
+	.pos 0x100
+Stack:
+	
+	
+	
+	
+	
+
